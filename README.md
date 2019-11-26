@@ -4,7 +4,7 @@ This is a docker-compose for monitoring clearwater with the [Elastic Stack](http
 
 # How it works:
 
-* To monitor Clearwater you should run the docker-elk repo first: [Docker elk]()
+* To monitor Clearwater you should run the docker-elk repo first: [Docker elk](https://github.com/cherrared/Docker-elk)
 * After that run the docker-compose.yml deploying Clearwater and Filebeat on dockers:
 
 
