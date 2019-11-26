@@ -155,7 +155,5 @@ services:
     volumes:
       - logs:/var/log
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
-    dns:
-      - 10.192.64.254
-      - 10.192.65.254
+   
   
