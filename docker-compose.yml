@@ -158,14 +158,4 @@ services:
     dns:
       - 10.192.64.254
       - 10.192.65.254
-  # livetest:
-  #   image: sofianinho/clearwater-live-test
-  #   environment:
-  #     - PROXY=bono
-  #     - ELLIS=ellis
-  #   depends_on:
-  #     - bono
-  #     - ellis
-  #   restart: always
-  #   volumes:
-  #     - logs:/home/live-test/clearwater-live-test/logfiles
+  
