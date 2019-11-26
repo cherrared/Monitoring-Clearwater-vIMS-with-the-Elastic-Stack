@@ -1,6 +1,6 @@
 # Clear ELK
 
-This a docker-compose for monitoring clearwater with the [Elastic Stack](https://www.elastic.co/products/)
+This is a docker-compose for monitoring clearwater with the [Elastic Stack](https://www.elastic.co/products/)
 
 
 
