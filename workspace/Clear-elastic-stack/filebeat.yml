@@ -1,0 +1,17 @@
+filebeat.prospectors:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/*
+  scan_frequency: 1s
+  encoding: plain
+  fields:
+    '@project': 5aaff8c39f94521
+    '@app': plugin-clearwater
+    '@custom': '0'
+
+output.logstash:
+  hosts: ["lucy3.rd.francetelecom.fr:5044"]
+
+path.data: /tmp/filebeat
+path.logs: /tmp/filebeat/logs

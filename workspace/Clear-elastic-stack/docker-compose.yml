@@ -1,0 +1,171 @@
+# Don't define "links" between services.   They aren't necessary and they break load balancing if you later
+# scale up the storage nodes.
+version: '3'
+volumes:
+  logs:
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v2.2.5
+    command: >
+      -name etcd0
+      -advertise-client-urls http://etcd:2379,http://etcd:4001
+      -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001
+      -initial-advertise-peer-urls http://etcd:2380
+      -listen-peer-urls http://0.0.0.0:2380
+      -initial-cluster etcd0=http://etcd:2380
+      -initial-cluster-state new
+  astaire:
+    image: sofianinho/astaire
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+      core:
+        soft: -1
+        hard: -1
+    volumes:
+      - logs:/var/log/astaire
+      - logs:/var/log/supervisor
+  chronos:
+    image: sofianinho/chronos
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    volumes:
+      - logs:/var/log/chronos
+      - logs:/var/log/supervisor
+  cassandra:
+    sysctls:
+       net.ipv6.conf.lo.disable_ipv6: 0
+    image: sofianinho/cassandra
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    ulimits:
+      nofile:
+        soft: 100000
+        hard: 100000
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - logs:/var/log/cassandra
+      - logs:/var/log/supervisor
+  bono:
+    image: sofianinho/bono
+    environment:
+      - PUBLIC_IP
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5060:5060"
+      - "5060:5060/udp"
+      - "5062:5062"
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+      core:
+        soft: -1
+        hard: -1
+    volumes:
+      - logs:/var/log/bono
+      - logs:/var/log/supervisor
+  sprout:
+    image: sofianinho/sprout
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    volumes:
+      - logs:/var/log/sprout
+      - logs:/var/log/supervisor
+  homestead:
+    image: sofianinho/homestead
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+      core:
+        soft: -1
+        hard: -1
+    volumes:
+      - logs:/var/log/homestead
+      - logs:/var/log/supervisor
+  homestead-prov:
+    image: sofianinho/homestead-prov
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    volumes:
+      - logs:/var/log/homestead-prov
+      - logs:/var/log/supervisor
+  homer:
+    image: sofianinho/homer
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    volumes:
+      - logs:/var/log/homer
+      - logs:/var/log/supervisor
+  ralf:
+    image: sofianinho/ralf
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+      core:
+        soft: -1
+        hard: -1
+    volumes:
+      - logs:/var/log/ralf
+      - logs:/var/log/supervisor
+  ellis:
+    image: sofianinho/ellis
+    environment:
+      - ADDITIONAL_SHARED_CONFIG
+    ports:
+      - 22
+      - "80:80"
+    volumes:
+      - logs:/var/log/ellis
+      - logs:/var/log/supervisor
+  beats:
+    image: docker.elastic.co/beats/filebeat:6.2.2
+    user: root
+    command: "filebeat -v -c /usr/share/filebeat/filebeat.yml"
+    volumes:
+      - logs:/var/log
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    dns:
+      - 10.192.64.254
+      - 10.192.65.254
+  # livetest:
+  #   image: sofianinho/clearwater-live-test
+  #   environment:
+  #     - PROXY=bono
+  #     - ELLIS=ellis
+  #   depends_on:
+  #     - bono
+  #     - ellis
+  #   restart: always
+  #   volumes:
+  #     - logs:/home/live-test/clearwater-live-test/logfiles
